@@ -17,12 +17,4 @@ class CyGrpcAuthInterceptor(CyGrpcInterceptor):
         if result:
             return self.on_success(continuation, handler_call_details)
         else:
-            return self.on_failed()
-
-    @classmethod
-    def on_success(cls, continuation, handler_call_details):
-        return continuation(handler_call_details)
-
-    @classmethod
-    def on_failed(cls):
-        return cls.terminator(grpc.StatusCode.UNAUTHENTICATED, "Validate authentication failed.")
+            return self.on_failed(grpc.StatusCode.UNAUTHENTICATED, "Validate authentication failed.")
