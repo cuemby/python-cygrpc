@@ -89,3 +89,8 @@ class MyAuthInterceptor(CyGrpcAuthInterceptor):
        """
        return True
 ``` 
+
+
+
+## Authors:
+- Fabio Moreno <fabio.moreno@cuemby.com>
