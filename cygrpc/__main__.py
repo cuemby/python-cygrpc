@@ -1,5 +1,5 @@
 #!/usr/bin/python3
 
-from cygrpc.cli import main
+from cygrpc import main
 
 main()

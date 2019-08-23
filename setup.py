@@ -22,12 +22,14 @@ HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README: str = (HERE / "README.md").read_text()
 
+packages = find_packages()
+packages.append("cygrpc")
 # Setup
 setup(
-    name='cygrpc.py',
+    name='cygrpc',
     version=VERSION,
-    packages=find_packages("src"),
-    package_dir={"": "src"},
+    packages=packages,
+    # package_dir={"": "src"},
     include_package_data=True,
     python_requires=">=3.6",
     url='https://gitlab.com/cuembylabs/cyrpc/python-cyrpc',
