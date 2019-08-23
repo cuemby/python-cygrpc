@@ -70,7 +70,10 @@ from cygrpc.middleware import CyGrpcInterceptor
 
 class CustomInterceptor(CyGrpcInterceptor):
     def intercept_service(self, continuation, handler_call_details):
+        # for continue to method implementation  
         return self.on_success(continuation, handler_call_details)
+        # for terminate request
+        return self.on_failed(grpc.StatusCode.UNAUTHENTICATED, "Validate authentication failed.")
 
 ```
 
