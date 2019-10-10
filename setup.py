@@ -43,7 +43,8 @@ setup(
         'wheel',
         'twine',
         'grpcio==1.23.0',
-        'grpcio-tools==1.23.0'
+        'grpcio-tools==1.23.0',
+        'bottle'
     ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
