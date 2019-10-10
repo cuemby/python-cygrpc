@@ -18,13 +18,13 @@ Params:
 * port : int = server port for listen. by default is 50051
 * max_threads : int =  set threads workers for server, by default is 10
 * interceptors: tuple(InterceptorImplementation) = server interceptors middlewares. by default is None.
-
+* http_port: int = port for http gateway 
 
 if you decide used all values by default, you can setup the server in less lines
 ```python
 from cygrpc.server import Server
 server = Server()
-calculator.add_CalculatorAPIServicer_to_server(Impl(), server.get_grpc_server())
+server.add_service(calculator_api_pb2_grpc, ServiceImpl)
 server.start()
 ```
 
@@ -36,7 +36,7 @@ from cygrpc.server import Server
 server = Server(host="0.0.0.0", port=50051, max_threads=10, interceptors=(MyAuthInterceptor(),))
 
 # attach service to server, repeat for multiple services
-calculator.add_CalculatorAPIServicer_to_server(Impl(), server.get_grpc_server())
+server.add_service(calculator_api_pb2_grpc, ServiceImpl)
 
 # finally start server.
 server.start()
@@ -47,11 +47,14 @@ server.start()
 The implementation is the same.
 
 ```python
-class Impl(calculator_api_pb2_grpc.CalculatorAPIServicer):
+# import  rest decorator
+from cygrpc.gateway.http import rest
+
+class ServiceImpl(calculator_api_pb2_grpc.CalculatorAPIServicer):
     """
     Service logic implementation.
     """
-
+    
     def Sum(self, request, context):
         total = 0
         for addend in request.addends:
@@ -60,6 +63,30 @@ class Impl(calculator_api_pb2_grpc.CalculatorAPIServicer):
         response = pb.SumResponse(sum=total)
         return response
 ```
+
+#### rest route
+
+for add rest route add the decorator @rest to method definition:
+
+```python
+# import rest decorator
+from cygrpc.gateway.http import rest
+
+
+class ServiceImpl(calculator_api_pb2_grpc.CalculatorAPIServicer):
+    """
+    Service logic implementation.
+    """
+    @rest("/v1/calculator/sum", method="POST")
+    def Sum(self, request, context):
+        total = 0
+        for addend in request.addends:
+            total += addend
+
+        response = pb.SumResponse(sum=total)
+        return response
+```
+
 
 ### Interceptors
 
