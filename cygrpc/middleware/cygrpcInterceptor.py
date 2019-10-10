@@ -28,7 +28,7 @@ class CyGrpcInterceptor(ABC, grpc.ServerInterceptor):
         return handler_call_details[0].split("/")[-1]
 
     @abstractmethod
-    def intercept_service(self, continuation, handler_call_details) -> grpc.RpcMehtodHandler:
+    def intercept_service(self, continuation, handler_call_details) -> grpc.RpcMethodHandler:
         pass
 
     @classmethod
@@ -36,9 +36,9 @@ class CyGrpcInterceptor(ABC, grpc.ServerInterceptor):
         return _unary_unary_rpc_terminator(code, details)
 
     @classmethod
-    def on_success(cls, continuation, handler_call_details) -> grpc.RpcMehtodHandler:
+    def on_success(cls, continuation, handler_call_details) -> grpc.RpcMethodHandler:
         return continuation(handler_call_details)
 
     @classmethod
-    def on_failed(cls, status_code: grpc.StatusCode, details: str) -> grpc.RpcMehtodHandler:
+    def on_failed(cls, status_code: grpc.StatusCode, details: str) -> grpc.RpcMethodHandler:
         return cls.terminator(grpc.StatusCode.UNAUTHENTICATED, "Validate authentication failed.")
