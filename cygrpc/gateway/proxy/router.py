@@ -35,7 +35,7 @@ class Router:
                 print(head_to_metadata)
                 result = Router().reverse_stub.execute(service, grpc_method, payload=payload, metadata=head_to_metadata)
                 response.set_header("Content-Type", "application/json")
-                return result
+                return json.dumps(result)
 
         def run_serve(self, port=3000):
             print("starting http serve")

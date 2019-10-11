@@ -58,10 +58,17 @@ class ReverseStub:
                 del self.stubs[impl][method]["_stub"]
                 self.stubs[impl][method]["stub_method"] = getattr(temp_stub, method)
 
-    def execute(self, service: str, method: str, payload: dict, metadata: tuple = ()):
+    def execute(self, service: str, method: str, payload: dict, metadata: tuple = ())->dict:
+        """
+        :param service:
+        :param method:
+        :param payload:
+        :param metadata:
+        :return:
+        """
         request = dict_to_protobuf(
             self.stubs[service.strip()][method.strip()]["requests_response"]["request"](),
             payload
         )
         response = self.stubs[service.strip()][method.strip()]["stub_method"](request, metadata=metadata)
-        return json.dumps(protobuf_to_dict(response))
+        return protobuf_to_dict(response, use_enum_labels=True, including_default_value_fields=True)
