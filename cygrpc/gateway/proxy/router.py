@@ -3,8 +3,9 @@ Http router
 
 """
 import json
+from bottle import BaseRequest, request, run, route, response
 
-from bottle import request, run, route, response
+BaseRequest.MEMFILE_MAX = 1024 * 1024 * 100
 
 from cygrpc.gateway.proxy.reverse_stub import ReverseStub
 
