@@ -3,11 +3,17 @@ Http router
 
 """
 import json
-from bottle import BaseRequest, request, run, route, response
+import logging as _logging
+import os
 
+from bottle import BaseRequest, request, run, route, response
+from cygrpc.gateway.proxy.reverse_stub import ReverseStub
+# increase payload size
 BaseRequest.MEMFILE_MAX = 1024 * 1024 * 100
 
-from cygrpc.gateway.proxy.reverse_stub import ReverseStub
+_logging.basicConfig(
+    level=os.getenv("LOGLEVEL", "INFO"),
+    format='%(levelname)s | %(asctime)s - %(name)s - %(message)s')
 
 
 class Router:
@@ -25,7 +31,6 @@ class Router:
         def add_route(self, service: str, grpc_method: str, url_path: str, http_method: str):
             @route(url_path, method=http_method)
             def intercent(**args):
-                print(dir(request.route))
                 print(request.route.rule)
                 request_json = request.json if request.json is not None else {}
                 payload = {**args, **request_json}
@@ -38,44 +43,7 @@ class Router:
                 response.set_header("Content-Type", "application/json")
                 return json.dumps(result)
 
-        def run_serve(self, port=3000):
-            print("starting http serve")
-            run(host='0.0.0.0', port=port, debug=True)
+        def run_serve(self, port=3000, debug=True):
+            _logging.info("starting http serve on port: "+str(port))
+            run(host='0.0.0.0', port=port, debug=debug)
             exit(0)
-
-
-"""
-class Router:
-    __SINGLE_INSTANCE = None
-
-    def __new__(cls, *args, **kwargs):
-        if not Router.__SINGLE_INSTANCE:
-            _router = Router.__Router()
-            cls.__SINGLE_INSTANCE = _router
-        return cls.__SINGLE_INSTANCE
-
-    class __Router:
-        services = list()
-        routes = {
-            "GET": dict(),
-            "POST": dict(),
-            "PATCH": dict(),
-            "PUT": dict(),
-            "DELETE": dict()
-        }
-
-        def add_route(self, service: str, grpc_method: str, url_path: str, http_method: str):
-            route = {
-                "service": service,
-                "grpc_method": grpc_method
-            }
-            self.routes[http_method.upper()][url_path] = route
-
-        def get_route(self, http_method, url_path):
-            return self.routes[http_method][url_path]
-
-        def print(self):
-            print(self.routes)
-
-
-"""

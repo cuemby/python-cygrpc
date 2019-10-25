@@ -118,6 +118,5 @@ class MyAuthInterceptor(CyGrpcAuthInterceptor):
 ``` 
 
 
-
 ## Authors:
 - Fabio Moreno <fabio.moreno@cuemby.com>

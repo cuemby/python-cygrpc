@@ -1,6 +1,6 @@
 import pathlib, os
 from setuptools import setup, find_packages
-from pathlib import Path
+# from pathlib import Path
 from typing import List
 
 
@@ -42,14 +42,15 @@ setup(
     install_requires=[
         'wheel',
         'twine',
-        'grpcio==1.23.0',
-        'grpcio-tools==1.23.0',
-        'bottle'
+        'bottle',
+        'grpcio>=1.23.0',
+        'grpcio-tools>=1.23.0',
     ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     entry_points={
         'console_scripts': [

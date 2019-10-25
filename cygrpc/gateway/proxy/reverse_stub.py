@@ -15,7 +15,6 @@ class RegisteringType(type):
         for key, val in attrs.iteritems():
             properties = getattr(val, 'route', None)
             if properties is not None:
-                print("properties: ", properties)
                 registry['%s.%s' % (name, key)] = properties
 
 
