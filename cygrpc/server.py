@@ -1,11 +1,12 @@
 import inspect as _inspect
+import logging as _logging
 import os
 import time
 from concurrent import futures
 
 import grpc
-import logging as _logging
 
+from cygrpc.gateway.proxy.middleware import MiddlewareManager
 from cygrpc.gateway.rest_gateway import HttpGateway
 from cygrpc.utils import extractor as _extractor
 
@@ -40,6 +41,7 @@ class Server:
             Server.__SINGLE_INSTANCE._secure = False if "secure" not in kwargs else kwargs["secure"]
             Server.__SINGLE_INSTANCE._interceptors = None if "interceptors" not in kwargs else kwargs["interceptors"]
             Server.__SINGLE_INSTANCE._rest_port = 3000 if "http_port" not in kwargs else kwargs["http_port"]
+            Server.__SINGLE_INSTANCE._debug = False if "http_debug" not in kwargs else kwargs["http_debug"]
             Server.__SINGLE_INSTANCE.init()
         return Server.__SINGLE_INSTANCE
 
@@ -53,6 +55,7 @@ class Server:
         _pb2_grpc = None
         _gateway = None
         _rest_port: int = 3000
+        _debug: bool = False
 
         def get_grpc_server(self):
             return self._grpc_server
@@ -82,6 +85,14 @@ class Server:
                     self._gateway: HttpGateway = HttpGateway()
                 self._gateway.add_service(pb2_grpc, service)
 
+        @staticmethod
+        def add_http_pre_middleware(middleware_class):
+            MiddlewareManager().add_pre_middleware(middleware_class)
+
+        @staticmethod
+        def add_http_pos_middleware(middleware_class):
+            MiddlewareManager().add_pos_middleware(middleware_class)
+
         def start(self):
             """
             Start server
@@ -91,7 +102,7 @@ class Server:
             self._grpc_server.start()
             if self._gateway is not None:
                 time.sleep(0.15)
-                self._gateway.start(port=self._rest_port)
+                self._gateway.start(port=self._rest_port, http_debug=self._debug)
             try:
                 while True and self._grpc_server is not None:
                     time.sleep(3000)
@@ -101,5 +112,4 @@ class Server:
 
         def stop(self):
             self._grpc_server.stop(0)
-            self._grpc_server = None
             exit(0)

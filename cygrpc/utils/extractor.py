@@ -93,7 +93,7 @@ def extract_requests_responses(pb2_grpc, **kwargs) -> _typing.Dict:
     :return:
     """
     lines = _inspect.getsource(pb2_grpc).split("\n")
-    print("lines", len(lines))
+    # print("lines", len(lines))
     methods = kwargs["methods"] if "methods" in kwargs else \
         extract_servicer_methods_names(pb2_grpc)
     module = kwargs["module"] if "module" in kwargs else \
@@ -129,6 +129,6 @@ def __extract_protobuf_request_object_from_str(line: str):
 
 def __extract_protobuf_response_object_from_str(line: str):
     line = line.strip().replace(",", "").replace("response_deserializer=", "").replace(".FromString", "")
-    print(line)
+    # print(line)
     line = line.split(".")
     return line[-1]

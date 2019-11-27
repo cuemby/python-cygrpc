@@ -8,10 +8,10 @@ from cygrpc.gateway.proxy.reverse_stub import ReverseStub
 from cygrpc.gateway.proxy.router import Router
 
 PORT = 8080
-_ENABLE_DEBUG = True if os.getenv("ENVIRONMENT", "develop").lower() == "develop" else False
+ENABLE_DEBUG = True if os.getenv("ENVIRONMENT", "production").lower() == "develop" else False
 
 
-def _run_http(stub_handler: ReverseStub, port: int):
+def _run_http(stub_handler: ReverseStub, port: int, http_debug: bool):
     """
     stub_handler.init_channel()
     _HttpHandler.proto_handler = stub_handler
@@ -22,7 +22,7 @@ def _run_http(stub_handler: ReverseStub, port: int):
     stub_handler.init_channel()
     router = Router()
     router.reverse_stub = stub_handler
-    router.run_serve(port=port, debug=_ENABLE_DEBUG)
+    router.run_serve(port=port, debug=http_debug)
 
 
 class HttpGateway:
@@ -36,6 +36,7 @@ class HttpGateway:
     def add_service(self, pb2_grpc, impl):
         self.stub_handler.add_service(pb2_grpc, impl)
 
-    def start(self, port=3000):
-        thread = threading.Thread(target=_run_http, args=(self.stub_handler, port,))
+    def start(self, port=3000, http_debug=False):
+
+        thread = threading.Thread(target=_run_http, args=(self.stub_handler, port, http_debug,))
         thread.run()

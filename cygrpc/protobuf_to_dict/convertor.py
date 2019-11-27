@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
-import six
 import datetime
 
-from google.protobuf.message import Message
+import six
 from google.protobuf.descriptor import FieldDescriptor
+from google.protobuf.message import Message
 from google.protobuf.timestamp_pb2 import Timestamp
 
 __all__ = ["protobuf_to_dict", "TYPE_CALLABLE_MAP", "dict_to_protobuf",
@@ -24,7 +24,6 @@ def timestamp_to_datetime(ts):
 
 
 EXTENSION_CONTAINER = '___X'
-
 
 TYPE_CALLABLE_MAP = {
     FieldDescriptor.TYPE_DOUBLE: float,
@@ -117,7 +116,6 @@ def protobuf_to_dict(pb, type_callable_map=TYPE_CALLABLE_MAP, use_enum_labels=Fa
 
 def _get_field_value_adaptor(pb, field, type_callable_map=TYPE_CALLABLE_MAP, use_enum_labels=False,
                              including_default_value_fields=False, lowercase_enum_lables=False):
-
     if field.message_type and field.message_type.name == Timestamp_type_name:
         return timestamp_to_datetime
     if field.type == FieldDescriptor.TYPE_MESSAGE:
@@ -182,7 +180,8 @@ def _get_field_mapping(pb, dict_value, strict):
             raise ValueError("Extension keys must be integers.")
         if ext_num not in pb._extensions_by_number:
             if strict:
-                raise KeyError("%s does not have a extension with number %s. Perhaps you forgot to import it?" % (pb, key))
+                raise KeyError(
+                    "%s does not have a extension with number %s. Perhaps you forgot to import it?" % (pb, key))
             continue
         ext_field = pb._extensions_by_number[ext_num]
         pb_val = None
@@ -208,14 +207,18 @@ def _dict_to_protobuf(pb, value, type_callable_map, strict, ignore_none):
                     else:
                         if ignore_none and value is None:
                             continue
+                        key_value = None
                         try:
                             if key_field.type in type_callable_map:
                                 key = type_callable_map[key_field.type](key)
                             if value_field.type in type_callable_map:
                                 value = type_callable_map[value_field.type](value)
+                            key_value = value
                             getattr(pb, field.name)[key] = value
                         except Exception as exc:
-                            raise RuntimeError(f"type: {type(pb)}, field: {field.name}, value: {value}") from exc
+                            # raise RuntimeError(f"type: {type(pb)}, field: {field.name}, is not type: {field.type}") from exc
+                            raise RuntimeError(
+                                f"field: {field.name} is invalid value. {str(exc)}") from exc
                 continue
             for item in input_value:
                 if field.type == FieldDescriptor.TYPE_MESSAGE:
@@ -250,7 +253,8 @@ def _dict_to_protobuf(pb, value, type_callable_map, strict, ignore_none):
         try:
             setattr(pb, field.name, input_value)
         except Exception as exc:
-            raise RuntimeError(f"type: {type(pb)}, field: {field.name}, value: {value}") from exc
+            raise RuntimeError(
+                f"field: `{field.name}` is invalid value. {str(exc)}") from exc
 
     return pb
 
