@@ -1,10 +1,12 @@
 """
 Utils for reverse protobuf
 """
-import json
-import grpc
-from cygrpc.protobuf_to_dict import protobuf_to_dict, dict_to_protobuf
+from typing import Tuple
 
+import grpc
+
+from cygrpc.gateway import errors
+from cygrpc.protobuf_to_dict import protobuf_to_dict, dict_to_protobuf
 from cygrpc.utils import extractor
 
 registry = {}
@@ -57,17 +59,25 @@ class ReverseStub:
                 del self.stubs[impl][method]["_stub"]
                 self.stubs[impl][method]["stub_method"] = getattr(temp_stub, method)
 
-    def execute(self, service: str, method: str, payload: dict, metadata: tuple = ())->dict:
+    def execute(self, service: str, method: str, payload: dict, metadata: tuple = ()) -> Tuple[dict, dict]:
         """
         :param service:
         :param method:
         :param payload:
         :param metadata:
-        :return:
+        :return: response body , metadata headers
         """
-        request = dict_to_protobuf(
-            self.stubs[service.strip()][method.strip()]["requests_response"]["request"](),
-            payload
-        )
-        response = self.stubs[service.strip()][method.strip()]["stub_method"](request, metadata=metadata)
-        return protobuf_to_dict(response, use_enum_labels=True, including_default_value_fields=True)
+        request = None
+        try:
+            request = dict_to_protobuf(
+                self.stubs[service.strip()][method.strip()]["requests_response"]["request"](),
+                payload
+            )
+        except Exception as err:
+            raise errors.HttpErrBadRequest(str(err))
+        response, call = self.stubs[service.strip()][method.strip()]["stub_method"].with_call(request,
+                                                                                              metadata=metadata)
+        metadata_response = {}
+        for key, value in call.trailing_metadata():
+            metadata_response[key] = value
+        return protobuf_to_dict(response, use_enum_labels=True, including_default_value_fields=True), metadata_response
