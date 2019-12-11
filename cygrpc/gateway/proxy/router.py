@@ -43,6 +43,8 @@ class Router:
                 # print(bottle.request.route)
                 # get request json payload
                 request_json = bottle.request.json if request.json is not None else {}
+                # routing dict
+                route = {"method": bottle.request.route.method, "rule": bottle.request.route.rule, "path": bottle.request.path}
                 # merge json payload with url params
                 payload = {**args, **request_json}
                 # extract request headers
@@ -57,7 +59,7 @@ class Router:
                 try:
                     # execute all pre middleware http
                     for middleware in MiddlewareManager().global_pre_middleware:
-                        middleware.process(payload, request_headers)
+                        middleware.process(route, payload, request_headers)
                     # parse request headers to metadata
                     head_to_metadata = [(str(key).lower(), request_headers[key]) for key in request_headers]
                     head_to_metadata.append(("interface", "HTTP"))

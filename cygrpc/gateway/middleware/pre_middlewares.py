@@ -6,5 +6,5 @@ class CygrpcAuthMiddleware(BasePreMiddleware):
     def __init__(self, function):
         self.function = function
 
-    def process(self, request: dict, header: dict) -> None:
-        self.function(request=request, header=header)
+    def process(self, route: dict, request: dict, header: dict) -> None:
+        self.function(route, request, header)
