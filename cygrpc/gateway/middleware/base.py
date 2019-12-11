@@ -7,7 +7,7 @@ class BasePreMiddleware(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def process(self, request: dict, header: dict) -> None:
+    def process(self, route: dict, request: dict, header: dict) -> None:
         raise NotImplementedError("BasePreMiddleware.action")
 
 
