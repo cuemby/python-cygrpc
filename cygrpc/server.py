@@ -82,7 +82,7 @@ class Server:
             add_to_server(service, self._grpc_server)
             if rest:
                 if self._gateway is None:
-                    self._gateway: HttpGateway = HttpGateway()
+                    self._gateway: HttpGateway = HttpGateway(grpc_host=self._host, grpc_port=self._port)
                 self._gateway.add_service(pb2_grpc, service)
 
         @staticmethod
