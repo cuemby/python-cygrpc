@@ -2,7 +2,7 @@
 
 Micro-Framwork for gRPC with REST expose support.
 
-## instalation
+## installation
 
 - Using pip
 ```
