@@ -1,13 +1,17 @@
 # python-cygrpc
 
+Micro-Framwork for gRPC with REST expose support.
+
 ## instalation
 
-add in `requirements.txt` project file:
-```requirements.txt
-git+https://gitlab.com/cuembylabs/cyrpc/python-cyrpc.git#egg=cygrpc
+- Using pip
 ```
-**Note:** you need configure SSH key and gitconfig for access to private repository
-
+pip install cygrpc
+```
+- Using git repository
+```
+git+https://github.com/cuemby/python-cygrpc.git#egg=cygrpc
+```
 
 ## Usage
 
