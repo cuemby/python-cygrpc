@@ -16,7 +16,7 @@ def parse_requirements(filename: str) -> List[str]:
 
 
 # CyGRPC version
-VERSION: str = '1.0.1'
+VERSION: str = '1.0.1.post1'
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
 # The text of the README file
