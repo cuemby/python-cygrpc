@@ -3,3 +3,4 @@ grpcio==1.24.1
 grpcio-tools==1.24.1
 bottle
 Paste
+wheel

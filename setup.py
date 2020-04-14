@@ -16,7 +16,7 @@ def parse_requirements(filename: str) -> List[str]:
 
 
 # CyGRPC version
-VERSION: str = '0.0.1-alpha.0'
+VERSION: str = '1.0.1'
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
 # The text of the README file
@@ -32,12 +32,13 @@ setup(
     # package_dir={"": "src"},
     include_package_data=True,
     python_requires=">=3.6",
-    url='https://gitlab.com/cuembylabs/cyrpc/python-cyrpc',
-    license='LICENCESE',
+    url='https://github.com/cuemby/python-cygrpc',
+    license='MIT',
     author='Fabio Moreno',
     author_email='fabio.moreno@cuemby.com',
     description='gRPC Micro framework',
     long_description=README,
+    long_description_content_type='text/markdown',
     setup_requires=['wheel', 'twine'],
     install_requires=[
         'wheel',
@@ -52,6 +53,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     entry_points={
         'console_scripts': [
