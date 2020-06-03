@@ -10,6 +10,7 @@ import traceback
 import bottle
 import grpc
 from bottle import request, response
+from truckpad.bottle.cors import CorsPlugin, enable_cors
 
 from cygrpc.gateway import errors
 from cygrpc.gateway.middleware import CygrpcLogMiddleware
@@ -38,7 +39,9 @@ class Router:
         reverse_stub: ReverseStub = None
 
         def add_route(self, service: str, grpc_method: str, url_path: str, http_method: str):
-            @bottle.route(url_path, method=http_method)
+            # TODO:: add cors to optional
+            @enable_cors
+            @bottle.route(url_path, method=['OPTIONS', http_method])
             def intercent(**args):
                 # print(bottle.request.route)
                 # get request json payload
@@ -119,5 +122,6 @@ class Router:
             debuger = debug
             MiddlewareManager().add_pos_middleware(CygrpcLogMiddleware)
             _logging.info(f"starting http serve on port: {port}")
+            bottle.install(CorsPlugin(origins=['*']))
             bottle.run(host='0.0.0.0', port=port, debug=debug, quiet=True, server='paste')
             exit(0)

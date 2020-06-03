@@ -16,7 +16,7 @@ def parse_requirements(filename: str) -> List[str]:
 
 
 # CyGRPC version
-VERSION: str = '1.0.1.post1'
+VERSION: str = '1.0.2'
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
 # The text of the README file
@@ -47,6 +47,7 @@ setup(
         'Paste',
         'grpcio>=1.23.0',
         'grpcio-tools>=1.23.0',
+        'bottle-cors'
     ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
