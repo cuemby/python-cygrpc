@@ -70,7 +70,8 @@ def extract_servicer_methods_names(pb2_grpc):
     for name in members:
         if name.endswith("Servicer"):
             servicer = getattr(pb2_grpc, name)
-        return [x for x in servicer.__dict__.keys() if not str(x).startswith("__")]
+            return [x for x in servicer.__dict__.keys() if not str(x).startswith("__")]
+    return None
 
 
 def extract_requests_responses(pb2_grpc, **kwargs) -> _typing.Dict:
