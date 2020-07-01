@@ -10,7 +10,6 @@ import traceback
 import bottle
 import grpc
 from bottle import request, response
-from truckpad.bottle.cors import CorsPlugin, enable_cors
 
 from cygrpc.gateway import errors
 from cygrpc.gateway.middleware import CygrpcLogMiddleware
@@ -24,6 +23,23 @@ bottle.BaseRequest.MEMFILE_MAX = 1024 * 1024 * 100
 _logging.basicConfig(
     level=os.getenv("LOGLEVEL", "INFO"),
     format='%(levelname)s | %(asctime)s - %(name)s - %(message)s')
+
+class EnableCors(object):
+    name = 'enable_cors'
+    api = 2
+
+    def apply(self, fn, context):
+        def _enable_cors(*args, **kwargs):
+            # set CORS headers
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+
+            if bottle.request.method != 'OPTIONS':
+                # actual request; reply with the actual response
+                return fn(*args, **kwargs)
+
+        return _enable_cors
 
 
 class Router:
@@ -40,10 +56,14 @@ class Router:
 
         def add_route(self, service: str, grpc_method: str, url_path: str, http_method: str):
             # TODO:: add cors to optional
-            @enable_cors
-            @bottle.route(url_path, method=['OPTIONS', http_method])
+            @bottle.route(url_path, method=['OPTIONS', 'HEAD', http_method])
             def intercent(**args):
-                # print(bottle.request.route)
+                response_headers = {
+                    "Content-Type": "application/json",
+                    "status": 200
+                }
+                """ if bottle.request.method == 'OPTIONS':
+                    return bottle.HTTPResponse(status=status, body="{}", headers=response_headers) """
                 # get request json payload
                 request_json = bottle.request.json if request.json is not None else {}
                 # routing dict
@@ -58,7 +78,6 @@ class Router:
                 request_obj = {"route": bottle.request.path, "method": http_method, "payload": payload,
                                "headers": request_headers}
                 # request headers base
-                response_headers = {"Content-Type": "application/json", "status": 200}
                 try:
                     # execute all pre middleware http
                     for middleware in MiddlewareManager().global_pre_middleware:
@@ -122,6 +141,6 @@ class Router:
             debuger = debug
             MiddlewareManager().add_pos_middleware(CygrpcLogMiddleware)
             _logging.info(f"starting http serve on port: {port}")
-            bottle.install(CorsPlugin(origins=['*']))
+            bottle.install(EnableCors())
             bottle.run(host='0.0.0.0', port=port, debug=debug, quiet=True, server='paste')
             exit(0)
