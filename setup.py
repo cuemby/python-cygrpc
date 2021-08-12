@@ -45,8 +45,8 @@ setup(
         'twine',
         'bottle',
         'Paste',
-        'grpcio==1.23.0',
-        'grpcio-tools==1.23.0',
+        'grpcio==1.24.1'
+        'grpcio-tools==1.24.1',
         'bottle-cors'
     ],
     classifiers=[
